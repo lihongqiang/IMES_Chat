@@ -16,7 +16,7 @@ Screenshots
 ![Screenshot](app/src/main/4.png)
 
 刷新和显示当前位置：
-![Screenshot](app/src/main/5.png)
+![Screenshot](app/src/main/5.jpg)
 
 文字转换成语音：
-![Screenshot](app/src/main/6.png)
+![Screenshot](app/src/main/6.jpg)
