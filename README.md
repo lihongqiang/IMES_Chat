@@ -5,7 +5,7 @@ Screenshots
 -----------
 聊天室：   
 
-<img src="app/src/main/1.png" alt="Drawing" width="400px" height="800px"/>
+<img src="app/src/main/1.png" alt="Drawing" width="400px" height="700px"/>
 
 当前位置选择器：
 ![Screenshot](app/src/main/2.png)
