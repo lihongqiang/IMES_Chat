@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="gcm.play.android.samples.com.gcmquickstart.ChatActivity"
+    tools:showIn="@layout/activity_chat"
+    android:layout_below="@+id/actionbar">
+
+
+    <ListView
+        android:id="@+id/lv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@null"
+        android:scrollbarStyle="insideOverlay"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/rl_bottom"
+        android:layout_marginTop="60dp" />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="@dimen/item_vertical_margin"
+        android:paddingLeft="@dimen/item_horizontal_margin"
+        android:paddingRight="@dimen/item_horizontal_margin"
+        android:paddingTop="@dimen/item_vertical_margin">
+
+        <Button
+            android:id="@+id/btn_audio"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:drawableLeft="@drawable/sendaudio"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <AutoCompleteTextView
+            android:id="@+id/et_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btn_image"
+            android:layout_toRightOf="@+id/btn_audio"
+            android:layout_toEndOf="@+id/btn_audio"
+            android:layout_toStartOf="@+id/btn_image" />
+
+        <Button
+            android:id="@+id/btn_image"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:drawableLeft="@drawable/sendimage"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/btn_action" />
+
+        <Button
+            android:id="@+id/btn_action"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:drawableLeft="@drawable/send"
+            android:layout_centerVertical="true"/>
+
+        <RelativeLayout
+            android:id="@+id/rl_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/et_content">
+
+            <ImageButton
+                android:id="@+id/button"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:drawableLeft="@drawable/refresh"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

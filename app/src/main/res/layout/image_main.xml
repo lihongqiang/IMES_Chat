@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyActivity">
+
+    <ImageView
+        android:id="@+id/Imageprev"
+        android:layout_width="match_parent"
+        android:layout_height="400dp" />
+
+    <Button
+        android:id="@+id/btn_click"
+        android:drawableLeft="@drawable/album"
+        android:layout_width="55dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/Imageprev"
+        android:layout_alignLeft="@+id/btn_up"
+        android:layout_alignStart="@+id/btn_up" />
+
+    <Button
+        android:id="@+id/btn_up"
+        android:layout_width="55dp"
+        android:layout_height="50dp"
+        android:drawableLeft="@drawable/ok"
+        android:layout_below="@+id/btn_click"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>
