@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Google Cloud Messaging Quickstart
 =================================
 
@@ -65,3 +66,7 @@ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 License for the specific language governing permissions and limitations under
 the License.
+=======
+# IMES_Chat
+Android应用，实现了发送文字，图片，语音；文字转换成语音；基于GooglePlaces 选择当前位置，GoogleMaps显示地图，GoogleStaticMaps获取当前位置的图片
+>>>>>>> 9a3e13518efe6f8c75858bc6b91a78988b5f165e
