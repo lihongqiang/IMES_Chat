@@ -11,9 +11,9 @@ public class Knowledge {
     public String message;
     public String time;
     public Boolean left;
-    public String flag;
-    public double latitude;
-    public double longitude;
+    public String flag;             //0表示文字，1表示普通图片，2表示地图图片
+    public String latitude;
+    public String longitude;
 
     public Knowledge(String uid, String uname, String message,String time,String flag){
         this.UId = uid;
@@ -21,8 +21,8 @@ public class Knowledge {
         this.message = message;
         this.time = time;
         this.flag = flag;
-        this.latitude = 0;
-        this.longitude = 0;
+        this.latitude = "0";
+        this.longitude = "0";
 
 
         if (uname.contentEquals("Rachel")){
@@ -33,7 +33,7 @@ public class Knowledge {
         Log.e("left", String.valueOf(left));
     }
 
-    public Knowledge(String uid, String uname, String message,String time,String flag,double latitude,double longitude){
+    public Knowledge(String uid, String uname, String message,String time,String flag,String latitude,String longitude){
         this.UId = uid;
         this.UName = uname;
         this.message = message;
@@ -51,19 +51,19 @@ public class Knowledge {
         Log.e("left", String.valueOf(left));
     }
 
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 

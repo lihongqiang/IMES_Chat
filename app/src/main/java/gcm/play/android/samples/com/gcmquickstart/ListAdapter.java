@@ -66,7 +66,7 @@ public class ListAdapter extends BaseAdapter {
                 chattime.setText(list.get(position).getTime());
                 return convertView;
             } else {
-                //flag = 1,send the image message
+                //flag = 1,2 send the image message
                 if (list.get(position).left) {
                     convertView = inflater.inflate( R.layout.left, null);
                 } else {

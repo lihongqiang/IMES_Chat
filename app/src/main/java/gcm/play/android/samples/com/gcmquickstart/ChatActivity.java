@@ -47,6 +47,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import javax.security.auth.login.LoginException;
+
 
 public class ChatActivity extends AppCompatActivity  {
 
@@ -155,7 +157,7 @@ public class ChatActivity extends AppCompatActivity  {
                     Calendar calder = Calendar.getInstance();
                     String time = calder.get(Calendar.HOUR) + ":" + calder.get(Calendar.MINUTE);
                     flag = "0";
-                    knowledge = new Knowledge("1155071415", "Rachel", chatedit.getText().toString(), time, flag);
+                    knowledge = new Knowledge("1155071415", "Rachel", chatedit.getText().toString(), time, flag, "0", "0");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -195,7 +197,9 @@ public class ChatActivity extends AppCompatActivity  {
                         String name = jsonArray.getJSONObject(i).getString("name");
                         String id = jsonArray.getJSONObject(i).getString("user_id");
                         String flag= jsonArray.getJSONObject(i).getString("flag");
-                        list.add(0, new Knowledge(id, name, message, timestamp, flag));
+                        String Know_latitude = jsonArray.getJSONObject(i).getString("latitude");
+                        String Know_longitude = jsonArray.getJSONObject(i).getString("longitude");
+                        list.add(0, new Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitude));
                     }
                     adapter.notifyDataSetChanged();
                     //        first_page=true;
@@ -232,7 +236,9 @@ public class ChatActivity extends AppCompatActivity  {
                                         String name = jsonArray.getJSONObject(i).getString("name");
                                         String id = jsonArray.getJSONObject(i).getString("user_id");
                                         String flag = jsonArray.getJSONObject(i).getString("flag");
-                                        list.add(0, new Knowledge(id, name, message, timestamp, flag));
+                                        String Know_latitude = jsonArray.getJSONObject(i).getString("latitude");
+                                        String Know_longitute = jsonArray.getJSONObject(i).getString("longitude");
+                                        list.add(0, new Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitute));
                                     }
                                     Runnable r = new Runnable() {
                                         @Override
@@ -261,12 +267,12 @@ public class ChatActivity extends AppCompatActivity  {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Knowledge knowledge = list.get(position);
-                if(knowledge.getFlag() == "1"){     //对于图片可以点击查看
+                if(knowledge.getFlag() == "2"){     //对于谷歌图片可以点击查看
                     //show google maps position
                     Intent intent = new Intent();
                     intent.setClass(ChatActivity.this, GoogleMapActivity.class);
-                    intent.putExtra("longitude", knowledge.getLongitude());
-                    intent.putExtra("latitude", knowledge.getLatitude());
+                    intent.putExtra("longitude", Double.parseDouble(knowledge.getLongitude()));
+                    intent.putExtra("latitude", Double.parseDouble(knowledge.getLatitude()));
                     startActivity(intent);
                 }
             }
@@ -307,8 +313,7 @@ public class ChatActivity extends AppCompatActivity  {
 
             String result_value = data.getStringExtra(ImageActivity.EXTRA_MESSAGE);
 
-            postPhotoToServer(result_value);
-
+            postPhotoToServer(result_value, "1");
 
         }
         if (requestCode == PLACE_PICKER_REQUEST) {
@@ -328,11 +333,12 @@ public class ChatActivity extends AppCompatActivity  {
         }
     }
 
-    void postPhotoToServer(String result_value){
+    void postPhotoToServer(String result_value, String image_flag){
         Calendar calder = Calendar.getInstance();
         String time = calder.get(Calendar.HOUR) + ":" + calder.get(Calendar.MINUTE);
-        flag = "1";
-        knowledge = new Knowledge("1155071415", "Rachel", result_value, time, flag, latitude, longitude);
+//        flag = "1";
+        knowledge = new Knowledge("1155071415", "Rachel", result_value, time, image_flag, ""+latitude, ""+longitude);
+        Log.e("PostToServer", "" + latitude + ", "+longitude);
         //Log.e("result: ",result_value);
         runOnUiThread(new Runnable() {
             @Override
@@ -340,9 +346,12 @@ public class ChatActivity extends AppCompatActivity  {
                 HttpTask HttpPostUrl = new HttpTask();
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
+                Log.e("postToServer", "postToServer");
                 if (HttpPostUrl.HttpPostUrl("http://54.238.173.183/iems5722/send_message", knowledge, Id)) {
+                    Log.e("postToServer", "postToServer");
                     list.add(knowledge);
                     adapter.notifyDataSetChanged();
+                    Log.e("postToServer", "postToServer");
                 }
             }
         });
@@ -513,7 +522,7 @@ public class ChatActivity extends AppCompatActivity  {
             @Override
             protected void onPostExecute(String encodedImage) {
                 if (encodedImage != null && !encodedImage.equals("")) {
-                    postPhotoToServer(encodedImage);
+                    postPhotoToServer(encodedImage, "2");
 //                    handler.sendEmptyMessage(0);
                 }
             }

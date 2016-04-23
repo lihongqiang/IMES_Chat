@@ -83,6 +83,8 @@ public class HttpTask extends AsyncTask<String, Void, Boolean> {
             builder.appendQueryParameter("name", knowledge.UName);
             builder.appendQueryParameter("message", knowledge.message);
             builder.appendQueryParameter("flag",knowledge.flag);
+            builder.appendQueryParameter("latitude",knowledge.latitude);
+            builder.appendQueryParameter("longitude",knowledge.longitude);
 
             String query = builder.build().getEncodedQuery();
             Log.d("query",query);
