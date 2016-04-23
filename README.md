@@ -3,8 +3,8 @@ Android应用，实现了发送文字，图片，语音；文字转换成语音�
 
 Screenshots
 -----------
-聊天室：
-![Screenshot](app/src/main/1.png)
+聊天室：   
+![Screenshot](app/src/main/1.png =200x150)
 
 当前位置选择器：
 ![Screenshot](app/src/main/2.png)
