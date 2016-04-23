@@ -4,9 +4,8 @@ Android应用，实现了发送文字，图片，语音；文字转换成语音�
 Screenshots
 -----------
 聊天室：   
-![Screenshot](app/src/main/1.png)
 
-<img src="app/src/main/1.png" alt="Drawing" width="200px" height="150px"/>
+<img src="app/src/main/1.png" alt="Drawing" width="800px" height="600px"/>
 
 当前位置选择器：
 ![Screenshot](app/src/main/2.png)
