@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,11 +17,13 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.iems5722.group9.*;
+import com.iems5722.group9.Knowledge;
 
 /**
  * Created by Rachel on 24/02/2016.
  */
-public class httptasktoken extends AsyncTask<String, Void, Boolean> {
+public class HttpTask extends AsyncTask<String, Void, Boolean> {
 
     //private static final String TAG = "HTTP_TASK";
 
@@ -31,40 +33,40 @@ public class httptasktoken extends AsyncTask<String, Void, Boolean> {
         return true;
     }
 
-//    public String HttpGetUrltoken(String url){
-//        String str = "";
-//        InputStream is = null;
-//        try {
-//            URL link = new URL(url);
-//            HttpURLConnection connection = (HttpURLConnection) link.openConnection();
-//            connection.setReadTimeout(10000);
-//            connection.setConnectTimeout(15000);
-//            connection.setRequestMethod("GET");
-//            connection.setDoInput(true);
-//
-//            connection.connect();
-//            int response = connection.getResponseCode();
-//            is = connection.getInputStream();
-//            String line;
-//            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-//
-//            while ((line = br.readLine()) != null ){
-//                str += line;
-//            }
-//            if (is != null){
-//                is.close();
-//            }
-//        } catch (MalformedURLException e){
-//            Log.e("Failed", e.getMessage());
-//        } catch (IOException e){
-//            Log.e("Failed", e.getMessage());
-//        } finally {
-//
-//        }
-//        return str;
-//    }
+    public String HttpGetUrl(String url){
+        String str = "";
+        InputStream is = null;
+        try {
+            URL link = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) link.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
 
-    public Boolean HttpPostUrltoken(String url, String token, String user_id){
+            connection.connect();
+            int response = connection.getResponseCode();
+            is = connection.getInputStream();
+            String line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            while ((line = br.readLine()) != null ){
+                str += line;
+            }
+            if (is != null){
+                is.close();
+            }
+        } catch (MalformedURLException e){
+            Log.e("Failed", e.getMessage());
+        } catch (IOException e){
+            Log.e("Failed", e.getMessage());
+        } finally {
+
+        }
+        return str;
+    }
+
+    public Boolean HttpPostUrl(String url, com.iems5722.group9.Knowledge knowledge, String Id){
 
         try {
             URL link = new URL(url);
@@ -79,8 +81,13 @@ public class httptasktoken extends AsyncTask<String, Void, Boolean> {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
 
             Uri.Builder builder = new Uri.Builder();
-            builder.appendQueryParameter("user_id", user_id);
-            builder.appendQueryParameter("token", token);
+            builder.appendQueryParameter("chatroom_id", Id);
+            builder.appendQueryParameter("user_id", knowledge.UId);
+            builder.appendQueryParameter("name", knowledge.UName);
+            builder.appendQueryParameter("message", knowledge.message);
+            builder.appendQueryParameter("flag",knowledge.flag);
+            builder.appendQueryParameter("latitude",knowledge.latitude);
+            builder.appendQueryParameter("longitude",knowledge.longitude);
 
             String query = builder.build().getEncodedQuery();
             Log.d("query",query);

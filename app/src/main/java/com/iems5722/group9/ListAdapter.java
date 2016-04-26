@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
+
+import com.iems5722.group9.Knowledge;
+import com.iems5722.group9.R;
 
 /**
  * Created by Rachel on 24/02/2016.
@@ -65,10 +68,10 @@ public class ListAdapter extends BaseAdapter {
                 TextView chattime = (TextView)convertView.findViewById(R.id.chattime);
                 chattime.setText(list.get(position).getTime());
                 return convertView;
-            } else {
+            } else if(list.get(position).getFlag() == "1" || list.get(position).getFlag() == "2"){
                 //flag = 1,2 send the image message
                 if (list.get(position).left) {
-                    convertView = inflater.inflate( R.layout.left, null);
+                    convertView = inflater.inflate( R.layout.item_image_list_left, null);
                 } else {
                     //layout the list of image message
                     convertView = inflater.inflate( R.layout.item_image_list, null);
@@ -85,6 +88,29 @@ public class ListAdapter extends BaseAdapter {
 
                 TextView chattime = (TextView)convertView.findViewById(R.id.chattime);
                 chattime.setText(list.get(position).getTime());
+                return convertView;
+            } else{
+                //flag = 3, audio
+                if (list.get(position).left) {
+                    convertView = inflater.inflate( R.layout.item_audio_list_left, null);
+                } else {
+                    //layout the list of image message
+                    convertView = inflater.inflate( R.layout.item_audio_list, null);
+                }
+                Object object = getItem(position);
+                TextView chatname = (TextView)convertView.findViewById(R.id.chatname);
+                chatname.setText(list.get(position).UName);
+
+                //显示默认图片
+                //get the image and show the image
+//                ImageView chatimage = (ImageView)convertView.findViewById(R.id.chatimage);
+//                byte[] decodedBytes = Base64.decode(list.get(position).getMessage(), 0);
+//                Bitmap decodedImage = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+//                chatimage.setImageBitmap(decodedImage);
+
+                TextView chattime = (TextView)convertView.findViewById(R.id.chattime);
+                chattime.setText(list.get(position).getTime());
+
                 return convertView;
             }
         }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +23,8 @@ import android.util.Log;
 
 import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.iid.InstanceIDListenerService;
+
+import com.iems5722.group9.RegistrationIntentService;
 
 public class MyInstanceIDListenerService extends InstanceIDListenerService {
 
@@ -37,7 +39,7 @@ public class MyInstanceIDListenerService extends InstanceIDListenerService {
     @Override
     public void onTokenRefresh() {
         // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
-        Intent intent = new Intent(this, RegistrationIntentService.class);
+        Intent intent = new Intent(this, com.iems5722.group9.RegistrationIntentService.class);
         startService(intent);
     }
     // [END refresh_token]

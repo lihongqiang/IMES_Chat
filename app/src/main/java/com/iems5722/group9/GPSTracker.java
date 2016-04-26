@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 /**
  * Created by Lomi on 16/4/19.

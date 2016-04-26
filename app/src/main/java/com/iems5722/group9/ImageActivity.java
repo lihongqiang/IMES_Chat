@@ -1,8 +1,10 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,6 +14,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.iems5722.group9.*;
+import com.iems5722.group9.ChatActivity;
+import com.iems5722.group9.PictureUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -24,7 +30,7 @@ import java.util.List;
 public class ImageActivity extends Activity{
     ImageView Imageprev,chatimage;
     Button imagechoose,imageup;
-    Uri selectedImage;
+    boolean flag = false;
 
     private static final int RESULT_LOAD_IMAGE = 1;
     public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
@@ -54,7 +60,7 @@ public class ImageActivity extends Activity{
             @Override
             public void onClick(View v) {
 
-                if(selectedImage == null){
+                if(!flag){
                     Log.e("choose", "choose");
                     Toast.makeText(getBaseContext(), "Please choose picture", Toast.LENGTH_LONG).show();
                     return;
@@ -62,7 +68,7 @@ public class ImageActivity extends Activity{
                 Imageprev.buildDrawingCache();
                 Bitmap image = Imageprev.getDrawingCache();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                image.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+                image.compress(Bitmap.CompressFormat.JPEG, 40, baos);
                 //image is the bitmap object
                 byte[] b = baos.toByteArray();
                 String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
@@ -70,7 +76,7 @@ public class ImageActivity extends Activity{
 
                 //send the encodedImage to ChatActivity
                 Intent intent = new Intent();
-                intent.setClass(ImageActivity.this, ChatActivity.class);
+                intent.setClass(ImageActivity.this, com.iems5722.group9.ChatActivity.class);
                 intent.putExtra(EXTRA_MESSAGE, encodedImage);
                 setResult(1001, intent);
                 finish();
@@ -89,8 +95,26 @@ public class ImageActivity extends Activity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null){
-            selectedImage = data.getData();
-            Imageprev.setImageURI(selectedImage);
+            Uri uri = data.getData();
+            String path = getRealPathFromURI(uri);
+            Log.e("choosePicPath", path);
+//            selectedImage = data.getData();
+//            Imageprev.setImageURI(selectedImage);
+            flag = true;
+            Imageprev.setImageBitmap(com.iems5722.group9.PictureUtil.getSmallBitmap(path));
         }
     }
+
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getContentResolver().query(contentUri, proj, null,
+                null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
+    }
+
 }

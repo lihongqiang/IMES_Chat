@@ -1,9 +1,12 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.StrictMode;
@@ -16,6 +19,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
@@ -41,7 +45,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -49,14 +59,25 @@ import java.util.Locale;
 
 import javax.security.auth.login.LoginException;
 
+import com.iems5722.group9.GoogleMapActivity;
+import com.iems5722.group9.HttpTask;
+import com.iems5722.group9.ImageActivity;
+import com.iems5722.group9.Knowledge;
+import com.iems5722.group9.ListAdapter;
+import com.iems5722.group9.PhotoTask;
+import com.iems5722.group9.R;
+
+//import gcm.play.android.samples.com.gcmquickstart.R;
+
 
 public class ChatActivity extends AppCompatActivity  {
 
-    private List<Knowledge> list = new ArrayList<Knowledge>();
-    Knowledge knowledge;
+    private List<com.iems5722.group9.Knowledge> list = new ArrayList<com.iems5722.group9.Knowledge>();
+    com.iems5722.group9.Knowledge knowledge;
     String page, all_page;
-    ListAdapter adapter;
+    com.iems5722.group9.ListAdapter adapter;
     Button imagesend;
+    Button audiosend ;
     TextToSpeech textToSpeech;
     String message;
     ContextMenuDialogFragment mMenuDialogFragment;
@@ -67,20 +88,30 @@ public class ChatActivity extends AppCompatActivity  {
     double longitude = 0;
     String Id;
 
-    //    共享位置,显示图片
-//    private Handler handler = new Handler(new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(Message msg) {
-//            if(msg.what == 0){
-//
-//                Log.e("handler", "ok");
-//            }
-//            return true;
-//        }
-//    });
+//    private static final String IP = "http://52.196.20.101";
+    private static final String IP = "http://54.238.173.183";
+
 
     //常量
     private static final int PLACE_PICKER_REQUEST = 1;
+    private static final String APP_TAG = "AudioRecorder";
+
+    //audio send
+    private static final String AUDIO_RECORDER_FILE_EXT_3GP = ".3gp";
+    private static final String AUDIO_RECORDER_FILE_EXT_MP4 = ".mp4";
+    private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
+    private MediaRecorder recorder = null;
+    private int currentFormat = 0;
+    private int output_formats[] = {
+            MediaRecorder.OutputFormat.MPEG_4, MediaRecorder.OutputFormat.THREE_GPP
+    };
+    private String file_exts[] = {
+            AUDIO_RECORDER_FILE_EXT_MP4, AUDIO_RECORDER_FILE_EXT_3GP
+    };
+    private String filePath;//记录语音存储路径
+
+    //音频播放
+//    MediaPlayer mediaPlayer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +121,6 @@ public class ChatActivity extends AppCompatActivity  {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Bundle extras = getIntent().getExtras();
-        //initActionBar((Toolbar) findViewById(R.id.toolbar));
         Id = extras.getString("ChatRoom_ID");
         String chatroom_name = extras.getString("chatroom_name");
 
@@ -109,6 +139,7 @@ public class ChatActivity extends AppCompatActivity  {
         final ListView listView = (ListView) findViewById(R.id.lv_content);
 
         imagesend = (Button) findViewById(R.id.btn_image);
+        audiosend = (Button) findViewById(R.id.btn_audio);
 
         listView.setAdapter(adapter);
         registerForContextMenu(listView);
@@ -133,14 +164,31 @@ public class ChatActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(ChatActivity.this, ImageActivity.class);
-                startActivityForResult(intent,1000);
+                intent.setClass(ChatActivity.this, com.iems5722.group9.ImageActivity.class);
+                startActivityForResult(intent, 1000);
 
             }
         });
 
+        //Keep holding the button to record the audio and then send it to the server;
+        findViewById(R.id.btn_audio).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Log.e("AudioRecorder", "Start Recording");
+                        filePath = startRecording();
+                        Log.e("file_path", filePath);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        Log.e("AudioRecorder", "stop Recording");
+                        send_audio(filePath);
+                        break;
+                }
+                return false;
+            }
 
-
+        });
 
         findViewById(R.id.btn_action).setOnClickListener(new View.OnClickListener() { // 发送按钮点击
             @Override
@@ -157,14 +205,14 @@ public class ChatActivity extends AppCompatActivity  {
                     Calendar calder = Calendar.getInstance();
                     String time = calder.get(Calendar.HOUR) + ":" + calder.get(Calendar.MINUTE);
                     flag = "0";
-                    knowledge = new Knowledge("1155071415", "Rachel", chatedit.getText().toString(), time, flag, "0", "0");
+                    knowledge = new com.iems5722.group9.Knowledge("1155071415", "Rachel", chatedit.getText().toString(), time, flag, "0", "0");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            HttpTask HttpPostUrl = new HttpTask();
+                            com.iems5722.group9.HttpTask HttpPostUrl = new com.iems5722.group9.HttpTask();
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
-                            if (HttpPostUrl.HttpPostUrl("http://54.238.173.183/iems5722/send_message", knowledge, Id)) {
+                            if (HttpPostUrl.HttpPostUrl(IP + "/iems5722/send_message", knowledge, Id)) {
                                 list.add(knowledge);
                                 adapter.notifyDataSetChanged();
                                 chatedit.getText().clear();
@@ -180,10 +228,10 @@ public class ChatActivity extends AppCompatActivity  {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                HttpTask HttpGetUrl = new HttpTask();
+                com.iems5722.group9.HttpTask HttpGetUrl = new com.iems5722.group9.HttpTask();
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
-                String data = HttpGetUrl.HttpGetUrl("http://54.238.173.183/iems5722/get_messages?chatroom_id=" + Id + "&page=" + page);
+                String data = HttpGetUrl.HttpGetUrl(IP + "/iems5722/get_messages?chatroom_id=" + Id + "&page=" + page);
                 Log.d("data", data);
                 try {
                     JSONObject jsonObject = new JSONObject(data);
@@ -199,7 +247,7 @@ public class ChatActivity extends AppCompatActivity  {
                         String flag= jsonArray.getJSONObject(i).getString("flag");
                         String Know_latitude = jsonArray.getJSONObject(i).getString("latitude");
                         String Know_longitude = jsonArray.getJSONObject(i).getString("longitude");
-                        list.add(0, new Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitude));
+                        list.add(0, new com.iems5722.group9.Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitude));
                     }
                     adapter.notifyDataSetChanged();
                     //        first_page=true;
@@ -218,12 +266,12 @@ public class ChatActivity extends AppCompatActivity  {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            HttpTask HttpGetUrl = new HttpTask();
+                            com.iems5722.group9.HttpTask HttpGetUrl = new com.iems5722.group9.HttpTask();
                             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                             StrictMode.setThreadPolicy(policy);
                             if (Integer.valueOf(page) < Integer.valueOf(all_page)) {
                                 page = String.valueOf(Integer.parseInt(page) + 1);
-                                String data = HttpGetUrl.HttpGetUrl("http://54.238.173.183/iems5722/get_messages?chatroom_id=" + Id + "&page=" + page);
+                                String data = HttpGetUrl.HttpGetUrl(IP + "/iems5722/get_messages?chatroom_id=" + Id + "&page=" + page);
                                 try {
                                     JSONObject jsonObject = new JSONObject(data);
                                     JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("messages");
@@ -238,7 +286,7 @@ public class ChatActivity extends AppCompatActivity  {
                                         String flag = jsonArray.getJSONObject(i).getString("flag");
                                         String Know_latitude = jsonArray.getJSONObject(i).getString("latitude");
                                         String Know_longitute = jsonArray.getJSONObject(i).getString("longitude");
-                                        list.add(0, new Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitute));
+                                        list.add(0, new com.iems5722.group9.Knowledge(id, name, message, timestamp, flag, Know_latitude, Know_longitute));
                                     }
                                     Runnable r = new Runnable() {
                                         @Override
@@ -266,14 +314,18 @@ public class ChatActivity extends AppCompatActivity  {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Knowledge knowledge = list.get(position);
+                com.iems5722.group9.Knowledge knowledge = list.get(position);
                 if(knowledge.getFlag() == "2"){     //对于谷歌图片可以点击查看
                     //show google maps position
                     Intent intent = new Intent();
-                    intent.setClass(ChatActivity.this, GoogleMapActivity.class);
+                    intent.setClass(ChatActivity.this, com.iems5722.group9.GoogleMapActivity.class);
                     intent.putExtra("longitude", Double.parseDouble(knowledge.getLongitude()));
                     intent.putExtra("latitude", Double.parseDouble(knowledge.getLatitude()));
                     startActivity(intent);
+                }
+                if(knowledge.getFlag() == "3"){     //对于音频文件可以播放
+                    byte[] decodedBytes = Base64.decode(list.get(position).getMessage(), 0);
+                    playMp3(decodedBytes);
                 }
             }
         });
@@ -304,14 +356,14 @@ public class ChatActivity extends AppCompatActivity  {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1000 && resultCode == 1001)
         {
-            adapter = new ListAdapter(ChatActivity.this, list);
+            adapter = new com.iems5722.group9.ListAdapter(ChatActivity.this, list);
             //final EditText chatedit = (EditText) findViewById(R.id.et_content);
             final ListView listView = (ListView) findViewById(R.id.lv_content);
 
             listView.setAdapter(adapter);
             registerForContextMenu(listView);
 
-            String result_value = data.getStringExtra(ImageActivity.EXTRA_MESSAGE);
+            String result_value = data.getStringExtra(com.iems5722.group9.ImageActivity.EXTRA_MESSAGE);
 
             postPhotoToServer(result_value, "1");
 
@@ -337,17 +389,17 @@ public class ChatActivity extends AppCompatActivity  {
         Calendar calder = Calendar.getInstance();
         String time = calder.get(Calendar.HOUR) + ":" + calder.get(Calendar.MINUTE);
 //        flag = "1";
-        knowledge = new Knowledge("1155071415", "Rachel", result_value, time, image_flag, ""+latitude, ""+longitude);
+        knowledge = new com.iems5722.group9.Knowledge("1155071415", "Rachel_left", result_value, time, image_flag, ""+latitude, ""+longitude);
         Log.e("PostToServer", "" + latitude + ", "+longitude);
         //Log.e("result: ",result_value);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                HttpTask HttpPostUrl = new HttpTask();
+                com.iems5722.group9.HttpTask HttpPostUrl = new com.iems5722.group9.HttpTask();
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
                 Log.e("postToServer", "postToServer");
-                if (HttpPostUrl.HttpPostUrl("http://54.238.173.183/iems5722/send_message", knowledge, Id)) {
+                if (HttpPostUrl.HttpPostUrl(IP + "/iems5722/send_message", knowledge, Id)) {
                     Log.e("postToServer", "postToServer");
                     list.add(knowledge);
                     adapter.notifyDataSetChanged();
@@ -413,6 +465,12 @@ public class ChatActivity extends AppCompatActivity  {
     }
 
     @Override
+    protected void onPause() {
+//        mediaPlayer.stop();
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         if (textToSpeech != null) {
             textToSpeech.stop();
@@ -421,6 +479,10 @@ public class ChatActivity extends AppCompatActivity  {
         if (mMenuDialogFragment != null && mMenuDialogFragment.isAdded()) {
             mMenuDialogFragment.dismiss();
         }
+
+//        if(mediaPlayer != null){
+//            mediaPlayer.stop();
+//        }
         super.onDestroy();
     }
 
@@ -439,7 +501,7 @@ public class ChatActivity extends AppCompatActivity  {
                     adapter.notifyDataSetChanged();
                 } else if (position == 1) {
 
-                    //google static maps
+                    //Google Places API for Android
                     PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
                     try {
@@ -512,21 +574,145 @@ public class ChatActivity extends AppCompatActivity  {
     private void startPhotosTask(String uri) {
 
         // Create a new AsyncTask that displays the bitmap and attribution once loaded.
-        new PhotoTask() {
+        new com.iems5722.group9.PhotoTask() {
             @Override
             protected void onPreExecute() {
                 // Display a temporary image to show while bitmap is loading.
-//                mImageView.setImageResource(R.drawable.empty_photo);
             }
 
             @Override
             protected void onPostExecute(String encodedImage) {
                 if (encodedImage != null && !encodedImage.equals("")) {
                     postPhotoToServer(encodedImage, "2");
-//                    handler.sendEmptyMessage(0);
                 }
             }
         }.execute(uri);
+    }
+
+    //--------------------------------------------------------------------------------------
+    // When click down the button, start to record;
+    private String startRecording(){
+        String path = getFilename();
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(output_formats[currentFormat]);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setOutputFile(path);
+        recorder.setOnErrorListener(errorListener);
+        recorder.setOnInfoListener(infoListener);
+
+        try {
+            recorder.prepare();
+            recorder.start();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
+    }
+
+    // get name of file;
+    private String getFilename(){
+        String dirpath = Environment.getExternalStorageDirectory().getPath();
+        File file = new File(dirpath,AUDIO_RECORDER_FOLDER);
+
+        if(!file.exists()){
+            file.mkdirs();
+        }
+
+        return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + file_exts[currentFormat]);
+    }
+
+    private MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
+        @Override
+        public void onError(MediaRecorder mr, int what, int extra) {
+            Log.i(APP_TAG, "Error: " + what + ", " + extra);
+        }
+    };
+
+    private MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
+        @Override
+        public void onInfo(MediaRecorder mr, int what, int extra) {
+            Log.i(APP_TAG, "Warning: " + what + ", " + extra);
+        }
+    };
+
+    public void send_audio(String path) {
+        stopRecording();
+        // release the button,then send the result audio to server;
+        Log.e("path", path);
+        File file = new File(path);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String encodedaudio = Base64.encodeToString(bytes,0);
+        Calendar calder = Calendar.getInstance();
+        String time = calder.get(Calendar.HOUR) + ":" + calder.get(Calendar.MINUTE);
+        knowledge = new com.iems5722.group9.Knowledge("1155071415", "Rachel", encodedaudio, time, "3", "0", "0");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                com.iems5722.group9.HttpTask HttpPostUrl = new com.iems5722.group9.HttpTask();
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+                if (HttpPostUrl.HttpPostUrl("http://54.238.173.183/iems5722/send_message", knowledge, Id)) {
+                    list.add(knowledge);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    //stop recording
+    private void stopRecording(){
+        if(null != recorder){
+            recorder.stop();
+            recorder.reset();
+            recorder.release();
+
+            recorder = null;
+
+        }
+    }
+
+    //音频播放，将byte数组转换成音频后播放
+    private void playMp3(byte[] mp3SoundByteArray) {
+        try {
+            // create temp file that will hold byte array
+            File tempMp3 = File.createTempFile("kurchina", "mp4", getCacheDir());
+            tempMp3.deleteOnExit();
+            FileOutputStream fos = new FileOutputStream(tempMp3);
+            fos.write(mp3SoundByteArray);
+            fos.close();
+
+            // Tried reusing instance of media player
+            // but that resulted in system crashes...
+//            if(mediaPlayer == null){
+//                mediaPlayer = new MediaPlayer();
+//            }
+            MediaPlayer mediaPlayer = new MediaPlayer();
+
+            // Tried passing path directly, but kept getting
+            // "Prepare failed.: status=0x1"
+            // so using file descriptor instead
+            FileInputStream fis = new FileInputStream(tempMp3);
+            mediaPlayer.setDataSource(fis.getFD());
+
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException ex) {
+            String s = ex.toString();
+            ex.printStackTrace();
+        }
     }
 
 }

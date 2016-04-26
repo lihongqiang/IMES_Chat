@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <TextView
+        android:id="@+id/chatname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textColor="#201f1f"
+        android:textSize="18dp"
+        android:text="TEST"
+        android:layout_gravity="left" />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/relativeLayout"
+        android:layout_toLeftOf="@+id/head">
+
+        <ImageView
+            android:id="@+id/chatimage"
+            android:src="@drawable/camera"
+            android:gravity="left"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/head"
+            android:layout_toEndOf="@+id/head" />
+        <ImageView
+            android:id="@+id/head"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/right_head"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+             />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/chattime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#161615"
+        android:gravity="left"
+        android:text="15:30" />
+
+</LinearLayout>

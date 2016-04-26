@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 /**
  * Created by lhq on 16/4/21.
@@ -62,7 +62,7 @@ public class PhotoTask extends AsyncTask<String, Void, String> {
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             //压缩图片
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
             //image is the bitmap object
             byte[] b = baos.toByteArray();
             encodedImage = Base64.encodeToString(b, Base64.DEFAULT);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 public class QuickstartPreferences {
 

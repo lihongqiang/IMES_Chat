@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.util.Log;
 
@@ -11,7 +11,7 @@ public class Knowledge {
     public String message;
     public String time;
     public Boolean left;
-    public String flag;             //0表示文字，1表示普通图片，2表示地图图片
+    public String flag;             //0表示文字，1表示普通图片，2表示地图图片, 3表示语音
     public String latitude;
     public String longitude;
 

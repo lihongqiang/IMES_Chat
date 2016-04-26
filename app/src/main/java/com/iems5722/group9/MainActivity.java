@@ -1,4 +1,4 @@
-package gcm.play.android.samples.com.gcmquickstart;
+package com.iems5722.group9;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,6 +28,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import com.iems5722.group9.*;
+import com.iems5722.group9.ChatActivity;
+import com.iems5722.group9.QuickstartPreferences;
+import com.iems5722.group9.RegistrationIntentService;
 
 //import org.json.JSONTokener;
 
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                        .getBoolean(com.iems5722.group9.QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     mInformationTextView.setText(getString(R.string.gcm_send_message));
                 } else {
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (checkPlayServices()) {
             // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
+            Intent intent = new Intent(this, com.iems5722.group9.RegistrationIntentService.class);
             startService(intent);
         }
 
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() { // 设置点击事件
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                Intent intent = new Intent(MainActivity.this, com.iems5722.group9.ChatActivity.class);
                 intent.putExtra("chatroom_name", chatroom_name.get(position));
                 intent.putExtra("ChatRoom_ID", Id.get(position));
                 startActivity(intent);
@@ -161,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     private void registerReceiver(){
         if(!isReceiverRegistered) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+                    new IntentFilter(com.iems5722.group9.QuickstartPreferences.REGISTRATION_COMPLETE));
             isReceiverRegistered = true;
         }
     }

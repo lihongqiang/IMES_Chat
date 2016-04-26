@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="gcm.play.android.samples.com.gcmquickstart" >
+    package="com.iems5722.group9" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/> -->
     <!-- [START gcm_permission] -->
@@ -63,7 +64,7 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="gcm.play.android.samples.com.gcmquickstart" />
+                <category android:name="com.iems5722.group9" />
             </intent-filter>
         </receiver>
         <!-- [END gcm_receiver] -->
